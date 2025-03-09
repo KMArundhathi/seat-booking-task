@@ -1,101 +1,144 @@
-import Image from "next/image";
+
+"use client";
+
+import { useState } from "react";
+import Swal from "sweetalert2";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Defining seat rows and columns
+  const rows = ["A", "B", "C", "D", "E", "F"];
+  const cols = Array.from({ length: 10 }, (_, i) => i + 1);
+
+  //seat pricing categories with prices and colors
+  const seatPricing = {
+    Silver: { price: 100, color: "bg-gray-300", rows: ["A", "B"] },
+    Gold: { price: 150, color: "bg-yellow-300", rows: ["C", "D"] },
+    Platinum: { price: 200, color: "bg-blue-300", rows: ["E", "F"] },
+  };
+
+  // Mapping of rows to their respective seat categories, prices, and colors
+  const rowToCategory = Object.entries(seatPricing).reduce((acc, [category, { price, rows }]) => {
+    rows.forEach(row => acc[row] = { price, category, color: seatPricing[category].color });
+    return acc;
+  }, {});
+
+  const [selectedSeats, setSelectedSeats] = useState([]);
+
+  const toggleSeat = (seat, row) => {
+    setSelectedSeats((prev) => {
+      //remove if the seat is already selected
+      if (prev.some((s) => s.seat === seat)) {
+        return prev.filter((s) => s.seat !== seat);
+      }
+      // showing alert if the user selects more than 8 seats
+      if (prev.length >= 8) {
+        Swal.fire({ icon: "error", title: "Limit Reached", text: "Max 8 seats allowed!" });
+        return prev;
+      }
+      // add the selected seat with its price and category
+      return [...prev, { seat, price: rowToCategory[row].price, category: rowToCategory[row].category }];
+    });
+  };
+
+  // Calculate total cost of selected seats
+  const totalCost = selectedSeats.reduce((sum, s) => sum + s.price, 0);
+
+  const handleBooking = () => {
+    // show a warning alert for when no seats are selected
+    if (selectedSeats.length === 0) {
+      Swal.fire({ icon: "warning", title: "No Seats Selected", text: "Select at least one seat!" });
+      return;
+    }
+    // confirmation popup before finalizing booking
+    Swal.fire({
+      title: "Confirm Booking",
+      text: `Booking ${selectedSeats.length} seat(s) for ₹${totalCost}.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, proceed!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // If confirmed, show success message and reset seat selection
+        Swal.fire({ icon: "success", title: "Booking Confirmed!" });
+        setSelectedSeats([]);
+      }
+    });
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center p-8">
+      <h1 className="text-2xl font-bold mb-6">Seat Booking System</h1>
+      <div className="grid md:grid-cols-2 gap-10 w-full max-w-4xl">
+        {/* Seat Selection */}
+        <div className="flex flex-col items-center">
+          <div className="space-y-4">
+            {rows.map((row) => (
+              <div key={row} className="flex space-x-2">
+                {cols.map((col) => {
+                  const seat = `${row}${col}`;
+                  const { color } = rowToCategory[row];
+                  const isSelected = selectedSeats.some((s) => s.seat === seat);
+                  return (
+                    <div
+                      key={seat}
+                      className={`w-10 h-10 flex items-center justify-center border rounded cursor-pointer transition-all ${isSelected ? color : "bg-white"
+                        } border-green-600`}
+                      onClick={() => toggleSeat(seat, row)}
+                    >
+                      {seat}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Right Column */}
+        <div className="flex flex-col gap-6">
+          {/* Pricing Info */}
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="text-lg font-semibold">The seats have dynamic pricing</h2>
+            <ul className="mt-2 text-sm">
+              {Object.entries(seatPricing).map(([category, { price, rows }]) => (
+                <li key={category} className="text-gray-700">
+                  <span className="font-bold">{category}:</span> ₹{price} (Rows {rows.join(", ")})
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Selected Seats */}
+          <div className="bg-white shadow rounded p-4">
+            <h2 className="text-lg font-semibold">Selected Seats</h2>
+            {selectedSeats.length === 0 ? (
+              <p className="text-gray-500 text-center mt-2">No seats selected</p>
+            ) : (
+              <ul className="mt-3 space-y-2 text-sm">
+                {selectedSeats.map((s, index) => (
+                  <li key={index} className="flex justify-between">
+                    <span>{s.seat} ({s.category})</span>
+                    <span>₹{s.price}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <hr className="my-3" />
+            <div className="text-lg font-bold flex justify-between">
+              <span>Total:</span>
+              <span>₹{totalCost}</span>
+            </div>
+            <button
+              className="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+              onClick={handleBooking}
+            >
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
