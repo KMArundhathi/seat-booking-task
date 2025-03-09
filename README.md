@@ -14,21 +14,19 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - **Tailwind CSS** (UI styling)
 - **SweetAlert2** (Popups)
 
-First, run the development server:
+## 📦 Installation Guide
 
-## 📦 Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/KMArundhathi/seta-booking-task.git
-   cd seat-booking-system
-2. Install dependencies:
+Follow these steps to set up and run the project locally.
+
+### 1️⃣ Clone the Repository  
+Open a terminal and run:  
 ```sh
-   pnpm install
-3. Start the development server:
-```sh
+git clone https://github.com/KMArundhathi/seta-booking-task.git
+cd seta-booking-task
+
+pnpm install
 pnpm run dev
 
-```
+Once the server starts, open http://localhost:3000 in your browser to view the application.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
