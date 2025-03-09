@@ -24,8 +24,8 @@ First, run the development server:
 2. Install dependencies:
 ```sh
    pnpm install
-
-```bash
+3. Start the development server:
+```sh
 pnpm run dev
 
 ```
