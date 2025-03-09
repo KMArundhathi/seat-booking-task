@@ -22,6 +22,7 @@ First, run the development server:
    git clone https://github.com/KMArundhathi/seta-booking-task.git
    cd seat-booking-system
 2. Install dependencies:
+```sh
    pnpm install
 
 ```bash
