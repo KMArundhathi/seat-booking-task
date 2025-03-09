@@ -21,8 +21,8 @@ Follow these steps to set up and run the project locally.
 ### 1️⃣ Clone the Repository  
 Open a terminal and run:  
 ```sh
-git clone https://github.com/KMArundhathi/seta-booking-task.git
-cd seta-booking-task
+git clone https://github.com/KMArundhathi/seat-booking-task.git
+cd seat-booking-task
 
 pnpm install
 pnpm run dev
